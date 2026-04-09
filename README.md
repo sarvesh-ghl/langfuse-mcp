@@ -17,6 +17,16 @@ Built for HIPAA-compliant Langfuse cloud instances where the `langfuse-cli` cann
 | `langfuse_get_session` | Get a session with its traces |
 | `langfuse_query_metrics` | Aggregated metrics (cost, latency, tokens) with dimensions and time bucketing |
 
+## Skill
+
+This repo includes a [Cursor skill](skills/langfuse-mcp/SKILL.md) that teaches the agent how to use the MCP tools effectively — common workflows, filter syntax, field selection, pagination patterns, and metrics queries.
+
+Install it with:
+
+```bash
+npx skills add sarvesh-ghl/langfuse-mcp
+```
+
 ## Setup
 
 ### Build
