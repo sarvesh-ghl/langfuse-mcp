@@ -17,6 +17,9 @@ Built for HIPAA-compliant Langfuse cloud instances where the `langfuse-cli` cann
 | `langfuse_list_sessions`     | List sessions                                                                 |
 | `langfuse_get_session`       | Get a session with its traces                                                 |
 | `langfuse_query_metrics`     | Aggregated metrics (cost, latency, tokens) with dimensions and time bucketing |
+| `langfuse_trace_analytics`   | Daily execution counts + unique entity counts from trace metadata (adoption analytics) |
+| `langfuse_entity_distribution` | Skewness & distribution analysis for any metadata field (top-N, cumulative %) |
+| `langfuse_error_analytics`   | Error rates over time with optional metadata grouping (error tracking) |
 
 
 ## Skill
