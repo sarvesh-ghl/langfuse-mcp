@@ -6,16 +6,18 @@ Built for HIPAA-compliant Langfuse cloud instances where the `langfuse-cli` cann
 
 ## Tools
 
-| Tool | Description |
-|------|-------------|
-| `langfuse_list_traces` | List/search traces with advanced filters, pagination, field selection |
-| `langfuse_get_trace` | Get a single trace with full observation tree |
-| `langfuse_list_observations` | List observations with cursor-based pagination and field selection |
-| `langfuse_list_scores` | List scores with filtering |
-| `langfuse_get_score` | Get a single score |
-| `langfuse_list_sessions` | List sessions |
-| `langfuse_get_session` | Get a session with its traces |
-| `langfuse_query_metrics` | Aggregated metrics (cost, latency, tokens) with dimensions and time bucketing |
+
+| Tool                         | Description                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------- |
+| `langfuse_list_traces`       | List/search traces with advanced filters, pagination, field selection         |
+| `langfuse_get_trace`         | Get a single trace with full observation tree                                 |
+| `langfuse_list_observations` | List observations with cursor-based pagination and field selection            |
+| `langfuse_list_scores`       | List scores with filtering                                                    |
+| `langfuse_get_score`         | Get a single score                                                            |
+| `langfuse_list_sessions`     | List sessions                                                                 |
+| `langfuse_get_session`       | Get a session with its traces                                                 |
+| `langfuse_query_metrics`     | Aggregated metrics (cost, latency, tokens) with dimensions and time bucketing |
+
 
 ## Skill
 
@@ -70,6 +72,7 @@ node dist/index.js
 ## API Endpoints Used
 
 All read-only:
+
 - `GET /api/public/traces` — list traces (page-based)
 - `GET /api/public/traces/{id}` — get trace
 - `GET /api/public/v2/observations` — list observations (cursor-based)
@@ -78,3 +81,4 @@ All read-only:
 - `GET /api/public/sessions` — list sessions
 - `GET /api/public/sessions/{id}` — get session
 - `GET /api/public/v2/metrics` — query metrics
+

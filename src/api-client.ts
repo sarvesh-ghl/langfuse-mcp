@@ -38,10 +38,14 @@ function getClient(): AxiosInstance {
 
 export async function apiGet<T>(
   path: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
+  options?: { timeout?: number }
 ): Promise<T> {
   const http = getClient();
-  const response = await http.get<T>(path, { params });
+  const response = await http.get<T>(path, {
+    params,
+    ...(options?.timeout ? { timeout: options.timeout } : {}),
+  });
   return response.data;
 }
 

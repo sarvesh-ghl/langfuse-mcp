@@ -7,6 +7,7 @@ import { registerObservationTools } from "./tools/observations.js";
 import { registerScoreTools } from "./tools/scores.js";
 import { registerSessionTools } from "./tools/sessions.js";
 import { registerMetricsTools } from "./tools/metrics.js";
+import { registerAnalyticsTools } from "./tools/analytics.js";
 
 const server = new McpServer({
   name: "langfuse-mcp-server",
@@ -18,6 +19,7 @@ registerObservationTools(server);
 registerScoreTools(server);
 registerSessionTools(server);
 registerMetricsTools(server);
+registerAnalyticsTools(server);
 
 async function main(): Promise<void> {
   const required = ["LANGFUSE_HOST", "LANGFUSE_PUBLIC_KEY", "LANGFUSE_SECRET_KEY"];

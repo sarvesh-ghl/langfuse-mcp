@@ -1,6 +1,6 @@
 ---
 name: langfuse-mcp
-description: Query Langfuse observability data (traces, observations, costs, latencies, errors, metrics) via the langfuse MCP server. Use when the user asks about LLM costs, trace debugging, observation analysis, model performance, latency issues, error investigation, or any Langfuse data query. Triggers on mentions of "langfuse", "traces", "LLM costs", "token usage", "observation latency", "model metrics", "trace errors", or requests to analyze AI/LLM production data.
+description: Query Langfuse observability data (traces, observations, costs, latencies, errors, metrics) via the langfuse MCP server. Use when the user asks about LLM costs, trace debugging, observation analysis, model performance, latency issues, error investigation, adoption analytics, unique location/entity counts, usage distribution, skewness analysis, or any Langfuse data query. Triggers on mentions of "langfuse", "traces", "LLM costs", "token usage", "observation latency", "model metrics", "trace errors", "adoption", "unique locations", "execution trends", "skewness", "error rate", or requests to analyze AI/LLM production data.
 ---
 
 # Langfuse MCP Skill
@@ -9,26 +9,34 @@ Query production LLM observability data from Langfuse via the `user-langfuse` MC
 
 ## Available Tools
 
-| Tool | Purpose | Pagination |
-|------|---------|-----------|
-| `langfuse_list_traces` | List/search traces with advanced filters | Page-based (page + limit) |
-| `langfuse_get_trace` | Get a single trace with full observation tree | N/A |
-| `langfuse_list_observations` | List observations (spans, generations, events) | Cursor-based (cursor + limit) |
-| `langfuse_list_scores` | List scores (numeric, boolean, categorical) | Page-based (page + limit) |
-| `langfuse_get_score` | Get a single score | N/A |
-| `langfuse_list_sessions` | List sessions | Page-based (page + limit) |
-| `langfuse_get_session` | Get a session with its traces | N/A |
-| `langfuse_query_metrics` | Aggregated metrics with dimensions and time buckets | Row-limited |
+
+| Tool                         | Purpose                                             | Pagination                    |
+| ---------------------------- | --------------------------------------------------- | ----------------------------- |
+| `langfuse_list_traces`       | List/search traces with advanced filters            | Page-based (page + limit)     |
+| `langfuse_get_trace`         | Get a single trace with full observation tree       | N/A                           |
+| `langfuse_list_observations` | List observations (spans, generations, events)      | Cursor-based (cursor + limit) |
+| `langfuse_list_scores`       | List scores (numeric, boolean, categorical)         | Page-based (page + limit)     |
+| `langfuse_get_score`         | Get a single score                                  | N/A                           |
+| `langfuse_list_sessions`     | List sessions                                       | Page-based (page + limit)     |
+| `langfuse_get_session`       | Get a session with its traces                       | N/A                           |
+| `langfuse_query_metrics`     | Aggregated metrics with dimensions and time buckets | Row-limited                   |
+| `langfuse_trace_analytics`   | Daily execution counts + unique entity counts from trace metadata | Auto-paginated |
+| `langfuse_entity_distribution` | Skewness & distribution analysis for any metadata field | Auto-paginated |
+| `langfuse_error_analytics`   | Error rates over time with optional metadata grouping | Auto-paginated |
+
 
 ## Common Workflows
 
 ### 1. Investigate a Specific Trace
+
 ```
 langfuse_get_trace(trace_id: "abc123")
 ```
+
 Returns the full trace with all nested observations, input/output, scores, latency, cost.
 
 ### 2. Find Expensive Traces
+
 ```
 langfuse_list_traces(
   limit: 10,
@@ -38,6 +46,7 @@ langfuse_list_traces(
 ```
 
 ### 3. Find Traces with Errors
+
 ```
 langfuse_list_traces(
   limit: 10,
@@ -46,6 +55,7 @@ langfuse_list_traces(
 ```
 
 ### 4. List Observations for a Trace
+
 ```
 langfuse_list_observations(
   trace_id: "abc123",
@@ -54,6 +64,7 @@ langfuse_list_observations(
 ```
 
 ### 5. Find Slow Generations
+
 ```
 langfuse_list_observations(
   type: "GENERATION",
@@ -63,6 +74,7 @@ langfuse_list_observations(
 ```
 
 ### 6. Cost by Model (Last 7 Days)
+
 ```
 langfuse_query_metrics(
   view: "observations",
@@ -74,6 +86,7 @@ langfuse_query_metrics(
 ```
 
 ### 7. Daily Cost Trend
+
 ```
 langfuse_query_metrics(
   view: "observations",
@@ -85,6 +98,7 @@ langfuse_query_metrics(
 ```
 
 ### 8. P95 Latency by Trace Name
+
 ```
 langfuse_query_metrics(
   view: "observations",
@@ -96,6 +110,7 @@ langfuse_query_metrics(
 ```
 
 ### 9. Filter by Environment
+
 ```
 langfuse_list_traces(
   limit: 20,
@@ -104,6 +119,7 @@ langfuse_list_traces(
 ```
 
 ### 10. Search by User ID
+
 ```
 langfuse_list_traces(
   user_id: "user_123",
@@ -129,6 +145,7 @@ The `filter` parameter accepts a JSON array of filter objects:
 ```
 
 ### Trace Filter Columns
+
 - **Core**: id, name, timestamp, userId, sessionId, environment, version, release, tags, bookmarked
 - **Metrics**: latency, inputTokens, outputTokens, totalTokens, inputCost, outputCost, totalCost
 - **Levels**: level, errorCount, warningCount, defaultCount, debugCount
@@ -136,6 +153,7 @@ The `filter` parameter accepts a JSON array of filter objects:
 - **Metadata**: metadata (use stringObject/numberObject type with key)
 
 ### Observation Filter Columns
+
 - **Core**: id, type, name, traceId, startTime, endTime, environment, level, statusMessage, version, userId, sessionId
 - **Trace**: traceName, traceTags/tags
 - **Performance**: latency, timeToFirstToken, tokensPerSecond
@@ -145,6 +163,7 @@ The `filter` parameter accepts a JSON array of filter objects:
 - **Metadata**: metadata (with key)
 
 ### Operators by Type
+
 - **datetime**: `>`, `<`, `>=`, `<=`
 - **string**: `=`, `contains`, `does not contain`, `starts with`, `ends with`
 - **number**: `=`, `>`, `<`, `>=`, `<=`
@@ -156,11 +175,13 @@ The `filter` parameter accepts a JSON array of filter objects:
 ## Field Selection
 
 ### Trace Fields
+
 `core` (always), `io` (input/output/metadata), `scores`, `observations`, `metrics`
 
 Excluding `observations` or `scores` returns empty arrays. Excluding `metrics` returns -1 for totalCost and latency.
 
 ### Observation Fields
+
 `core` (always: id, traceId, startTime, endTime, type), `basic` (name, level, version), `time` (completionStartTime, createdAt), `io` (input, output), `metadata`, `model` (providedModelName, modelParameters), `usage` (usageDetails, costDetails, totalCost), `prompt` (promptId, promptName, promptVersion), `metrics` (latency, timeToFirstToken)
 
 Default: `core,basic`. Recommended for analysis: `core,basic,usage,metrics,model`.
@@ -168,20 +189,100 @@ Default: `core,basic`. Recommended for analysis: `core,basic,usage,metrics,model
 ## Metrics API
 
 ### Views
+
 - **observations**: spans, generations, events — latency, cost, tokens, count
 - **scores-numeric**: numeric/boolean scores — count, value aggregations
 - **scores-categorical**: categorical scores — count only
 
 ### Aggregations
+
 `sum`, `avg`, `count`, `max`, `min`, `p50`, `p75`, `p90`, `p95`, `p99`, `histogram`
 
 ### Dimensions (for groupby)
+
 **Observations**: environment, type, name, level, version, tags, release, traceName, providedModelName, promptName, promptVersion, startTimeMonth
 
 **Do NOT use as dimensions** (high cardinality — use as filters instead): id, traceId, userId, sessionId, parentObservationId
 
 ### Time Bucketing
+
 Set `time_dimension.granularity` to: `auto`, `minute`, `hour`, `day`, `week`, `month`
+
+## Product & Adoption Analytics
+
+These tools auto-paginate through all traces and aggregate locally -- filling the gap where `langfuse_query_metrics` (observation-level only, no trace-level distinct counts) cannot answer product questions.
+
+### 11. Daily Adoption Trend with Unique Locations
+
+```
+langfuse_trace_analytics(
+  trace_name: "ai_agent",
+  from_date: "2026-04-08",
+  to_date: "2026-04-16",
+  metadata_fields: ["locationId", "workflowId"]
+)
+```
+
+Returns per day: execution count, unique locations, unique workflows, avg executions per location. Plus cumulative totals.
+
+### 12. Skewness / Distribution Analysis
+
+```
+langfuse_entity_distribution(
+  trace_name: "ai_agent",
+  from_date: "2026-04-08",
+  to_date: "2026-04-16",
+  metadata_field: "locationId",
+  top_n: 20
+)
+```
+
+Returns: top 20 locations by execution count with percentages, top-10/top-20 cumulative %, and frequency distribution buckets (1, 2-5, 6-20, 21-50, 51-100, 100+).
+
+### 13. Error Rate Tracking
+
+```
+langfuse_error_analytics(
+  trace_name: "ai_agent",
+  from_date: "2026-04-08",
+  to_date: "2026-04-16",
+  group_by_metadata: "locationId"
+)
+```
+
+Returns per day: total executions, error count, error rate. Plus top entities by error count if `group_by_metadata` is set.
+
+### 14. Compare Feature Adoption
+
+Run `langfuse_trace_analytics` for each feature trace name and compare side-by-side:
+
+```
+langfuse_trace_analytics(trace_name: "ai_agent", from_date: "2026-04-01", to_date: "2026-04-16", metadata_fields: ["locationId"])
+langfuse_trace_analytics(trace_name: "chatgpt", from_date: "2026-04-01", to_date: "2026-04-16", metadata_fields: ["locationId"])
+```
+
+### When to Use Which Tool
+
+| Question | Tool |
+|----------|------|
+| "How many unique locations used ai_agent this week?" | `langfuse_trace_analytics` |
+| "Is adoption growing day-over-day?" | `langfuse_trace_analytics` |
+| "Are executions concentrated in a few locations?" | `langfuse_entity_distribution` |
+| "What's the error rate after the latest release?" | `langfuse_error_analytics` |
+| "Which locations have the most errors?" | `langfuse_error_analytics` with `group_by_metadata` |
+| "What's the cost per model?" | `langfuse_query_metrics` (observation-level) |
+| "What's the p95 latency trend?" | `langfuse_query_metrics` (observation-level) |
+
+### Important: metadata_field Values
+
+The analytics tools extract values from `trace.metadata`. Common fields set by the automation-workflows-backend:
+
+- `locationId` -- GHL sub-account
+- `workflowId` -- workflow UUID
+- `contactId` -- contact being processed
+- `workflowStepId` -- specific step in the workflow
+
+Note: `trace.userId` is set to `workflowStatusId` (unique per execution), NOT locationId. Always use `metadata_fields: ["locationId"]` for location analytics.
 
 ## Tips
 
@@ -192,3 +293,5 @@ Set `time_dimension.granularity` to: `auto`, `minute`, `hour`, `day`, `week`, `m
 5. **For large sessions**: Use `langfuse_list_traces(session_id: "...")` instead of `langfuse_get_session` for paginated access
 6. **Metrics for aggregates**: Use `langfuse_query_metrics` for cost/latency summaries instead of listing individual items
 7. **Metadata filtering**: Use stringObject type with a key parameter to filter on custom metadata fields
+8. **Adoption analytics**: Use the `langfuse_trace_analytics` and `langfuse_entity_distribution` tools for product questions that need unique entity counts -- they auto-paginate through all traces
+
